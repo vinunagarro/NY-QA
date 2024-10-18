@@ -15,10 +15,11 @@ Feature: New York Times Website Testing
       | searchText |
       | COVID-19   |
 
-  Scenario: Article Page Navigation
+  Scenario: Page Navigation
     Given I navigate to the New York Times homepage
-    When I click on the first article
-    Then I should see the article title
+    When I click on the world news
+    Then I should see the world news title
+
 
   Scenario Outline: Footer Links
     Given I navigate to the New York Times homepage

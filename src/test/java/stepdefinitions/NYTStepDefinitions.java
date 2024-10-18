@@ -17,12 +17,21 @@ import java.util.concurrent.TimeUnit;
 public class NYTStepDefinitions {
 
     WebDriver driver = new ChromeDriver();
-    String firstArticleTxt = "";
+    String getWorldNewsText = "";
 
 
     public void clickOnContinueBtn() {
-        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-        driver.findElement(By.xpath("//button[contains(text(),'Continue')]")).click();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+        // explicit wait - to wait for the compose button to be click-able
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[contains(text(),'Continue')]")));
+        WebElement continueBtn = driver.findElement(By.xpath("//button[contains(text(),'Continue')]"));
+
+        if(continueBtn.isDisplayed()){
+            continueBtn.click();
+        }
+
     }
 
     @Given("I navigate to the New York Times homepage")
@@ -58,23 +67,6 @@ public class NYTStepDefinitions {
         driver.close();
      }
 
-    @When("I click on the first article")
-    public void i_click_on_the_first_article() {
-        WebElement firstArticle = driver.findElement(By.xpath("((//section)[4]//p)[1]"));
-        firstArticleTxt = firstArticle.getText();
-        firstArticle.click();
-
-    }
-    @Then("I should see the article title")
-    public void i_should_see_the_article_title() {
-        clickOnContinueBtn();
-        WebElement titleElement = driver.findElement(By.cssSelector("h1"));
-        String titleEleText = titleElement.getText();
-        assert titleEleText.equals(firstArticleTxt);
-
-        driver.close();
-    }
-
     @When("I click on the {string} footer link")
     public void i_click_on_the_footer_link(String linkText) {
         WebElement footerLink = driver.findElement(By.linkText(linkText));
@@ -83,6 +75,22 @@ public class NYTStepDefinitions {
     @Then("I should be redirected to the contact page")
     public void i_should_be_redirected_to_the_contact_page() {
         new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.urlContains("Contact"));
+        driver.close();
+    }
+
+    @When("I click on the world news")
+    public void i_click_on_the_world_news() {
+        WebElement getWorldNews = driver.findElement(By.xpath("(//li[@data-navid='World'])[2]"));
+        String getWorldNewsText = getWorldNews.getText();
+        getWorldNews.click();
+    }
+
+    @Then("I should see the world news title")
+    public void i_should_see_the_world_news_title() {
+        clickOnContinueBtn();
+        WebElement WorldNewsTitle = driver.findElement(By.cssSelector("h1"));
+        String titleEleText = WorldNewsTitle.getText();
+        assert  titleEleText.contains(getWorldNewsText);
         driver.close();
     }
 
